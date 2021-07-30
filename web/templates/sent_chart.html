@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>{{label}}</title>
+        
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+        <script src='../static/Chart.js'></script>
+    </head>
+
+    <body>
+        <center>
+            <h2>{{label}}</h2>
+            <div style="width:800px;height:600px">
+                <canvas id="chart"></canvas>
+            </div>
+        </center>
+
+        <script>
+
+           var ctx = document.getElementById("chart");
+
+           var myChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: ["compound", "positive", "neutral", "negative"],
+                    datasets: [{
+                        label: 'Average Value (-10 to 10)',
+                        data: [{{comp}}, {{pos}}, {{neu}}, {{neg}}],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+           });
+
+
+           var src_comp = 0.0;
+           var src_pos = 0.0;
+           var src_neu = 0.0;
+           var src_neg = 0.0;
+
+            setInterval(function(){
+                $.getJSON('/sentiment/refreshData', {
+                }, function(data) {
+                    src_comp = data.sComp;
+                    src_pos = data.sPos;
+                    src_neu = data.sNeu;
+                    src_neg = data.sNeg;
+                });
+
+                myChart.data.datasets[0].data = [src_comp, src_pos, src_neu, src_neg]
+                myChart.update();
+
+            },1000);
+
+
+
+
+
+        </script>
+
+
+    </body>
+</html>
